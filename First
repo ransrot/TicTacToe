@@ -1,0 +1,184 @@
+class Tac:
+    def __init__(self):
+        self.board = []
+    
+    def reset_board(self):
+        self.board = []
+        self.init_board()
+        
+    def init_board(self):
+        
+        for i in range(3):
+            self.board.append(["", "", ""])
+    
+    def get_board(self):
+        return self.board
+    
+    def pos_open(self, x, y):
+        
+        if x < len(self.board) and y < len(self.board):
+            return self.board[x][y] == ""
+        return False
+    
+    def insert_pos(self, x, y, var):
+        
+        if self.pos_open(x, y):
+            self.board[x][y] = var
+            return True
+        
+        return False
+    
+    def check_winner(self, var):
+        
+        if self.board[0][0] == var and self.board[0][1] == var and self.board[0][2] == var:
+            return True
+        
+        elif self.board[1][0] == var and self.board[1][1] == var and self.board[1][2] == var:
+            return True
+        
+        elif self.board[2][0] == var and self.board[2][1] == var and self.board[2][2] == var:
+            return True
+        
+        elif self.board[0][0] == var and self.board[1][0] == var and self.board[2][0] == var:
+            return True
+        
+        elif self.board[0][1] == var and self.board[1][1] == var and self.board[2][1] == var:
+            return True
+        
+        elif self.board[0][2] == var and self.board[1][2] == var and self.board[2][2] == var:
+            return True
+        
+        elif self.board[0][0] == var and self.board[1][1] == var and self.board[2][2] == var:
+            return True
+        
+        elif self.board[0][2] == var and self.board[1][1] == var and self.board[2][0] == var:
+            return True
+        
+        return False
+     
+    def print_board(self):
+        
+        for let in self.board:
+            print(let)
+        print("\n")
+
+class Place:
+    def __init__(self, var, tac):
+        self.var = var
+        self.tac = tac # Tac object
+    
+    def get_var(self):
+        return self.var
+    
+    def set_var(self, v):
+        self.var = v
+    
+    def won(self):
+        return self.tac.check_winner(self.var)
+
+def pick():
+    print("Choose your symbol: ")
+    print("\n1. X")
+    print("2. O\n")
+    
+    symbol = input("Enter the number for the symbol you want: ")
+    
+    try:
+        symbol = int(symbol)
+        
+        if not 1 <= symbol <= 2:
+            print("[!] Has to be between 1 and 2")
+            return 0
+            
+    except ValueError:
+        print("[!] Invalid number.")
+        return 0
+    
+    if symbol == 1:
+        print("Player 1 will be X and Player 2 will be O")
+        return 1
+    
+    else:
+        print("Player 1 will be O and Player 2 will be X")
+        return 2
+
+def verify_coordinate(cord, pos):
+    
+    while cord != "0" and cord != "1" and cord != "2":
+        cord = input("Input {} position (0 to 2): ".format(pos))
+    return int(cord)
+
+def turn(obj, num, board):
+    print("[+] Player {} turn\n".format(num))
+    board.print_board()
+    
+    if obj.won():
+        return True
+    
+    x = verify_coordinate(input("Input x position (0 to 2): "), "x")
+    y = verify_coordinate(input("Input y position (0 to 2): "), "y")
+    
+    print("\n")
+    
+    while not board.pos_open(x, y):
+        print("[!] Spot not open. Try again\n")
+        
+        x = verify_coordinate(input("Input x position (0 to 2): "), "x")
+        y = verify_coordinate(input("Input y position (0 to 2): "), "y")
+    
+    board.insert_pos(x, y, obj.get_var())
+    
+    if obj.won():
+        return True
+    return False
+
+def play_again(obj, count, board):
+    print("{} Won {} times. \n".format(obj.get_var(), str(count)))
+    board.print_board()
+    return input("Play again? (y/n): ").lower() == "y"
+
+def main():
+    print("[+] Welcome to tic tac toe")
+    first = pick()
+    
+    if first == 0:
+        return
+    
+    board = Tac()
+    board.init_board()
+
+    x = Place("X", board)
+    o = Place("O", board)
+    
+    if first == 2: # swap the two
+        x.set_var("O")
+        o.set_var("X")
+    
+    x_wins = 0
+    o_wins = 0
+    
+    while True:
+        
+        if turn(x, str(1), board):
+            x_wins += 1
+                
+            if not play_again(x, x_wins, board):
+                print("[!] End of game.")
+                break
+            else:
+                board.reset_board()
+                continue
+                    
+        if turn(o, str(2), board):
+            o_wins += 1
+                
+            if not play_again(o, o_wins, board):
+                print("[!] End of game.")
+                break
+            else:
+                board.reset_board()
+                continue
+        
+
+if __name__ == '__main__':
+    main()
