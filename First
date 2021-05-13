@@ -1,6 +1,15 @@
 class Tac:
     def __init__(self):
         self.board = []
+        
+    def tie(self):
+        
+        for l in self.board:
+            for let in l:
+                if let == "":
+                    return False
+        
+        return True
     
     def reset_board(self):
         self.board = []
@@ -132,9 +141,11 @@ def turn(obj, num, board):
         return True
     return False
 
-def play_again(obj, count, board):
-    print("{} Won {} times. \n".format(obj.get_var(), str(count)))
-    board.print_board()
+def play_again(obj = None, count = None, board = None):
+    if obj and count and board:
+        print("{} Won {} times. \n".format(obj.get_var(), str(count)))
+        board.print_board()
+        
     return input("Play again? (y/n): ").lower() == "y"
 
 def main():
@@ -158,6 +169,13 @@ def main():
     o_wins = 0
     
     while True:
+        
+        if board.tie():
+            print("[+] Tie! ")
+            
+            if not play_again():
+                print("[!] End of game.")
+                break
         
         if turn(x, str(1), board):
             x_wins += 1
